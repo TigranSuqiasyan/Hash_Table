@@ -154,4 +154,21 @@ private:
     size_t _size;
 };
 
+
+// spectialization for std::string as a key
+template <typename Value>
+class hash_table<std::string, Value>
+{
+public:
+    size_t hash(const std::string&);
+};
+
+template <typename Value>
+class hash_table<int, Value>
+{
+public:
+    size_t hash(int);
+};
+
+
 #endif // HASH_TABLE_H
