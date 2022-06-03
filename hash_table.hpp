@@ -163,6 +163,7 @@ public:
     size_t hash(const std::string&);
 };
 
+// specialization for int as a key
 template <typename Value>
 class hash_table<int, Value>
 {
@@ -170,5 +171,60 @@ public:
     size_t hash(int);
 };
 
+// specialization for long as a key
+template <typename Value>
+class hash_table<long, Value>
+{
+public:
+    size_t hash(long);
+};
+
+// specialization for short as a key
+template <typename Value>
+class hash_table<short, Value>
+{
+public:
+    size_t hash(short);
+};
+
+// specialization for char as a key
+template <typename Value>
+class hash_table<char, Value>
+{
+public:
+    size_t hash(char);
+};
+
+// specialization for wchar_t as a key
+template <typename Value>
+class hash_table<wchar_t, Value>
+{
+public:
+    size_t hash(wchar_t);
+};
+
+// specialization for float as a key
+template <typename Value>
+class hash_table<float, Value>
+{
+public:
+    size_t hash(float);
+};
+
+// specialization for double as a key
+template <typename Value>
+class hash_table<double, Value>
+{
+public:
+    size_t hash(double);
+};
+
+// specialization for long double as a key
+template <typename Value>
+class hash_table<long double, Value>
+{
+public:
+    size_t hash(long double);
+};
 
 #endif // HASH_TABLE_H
