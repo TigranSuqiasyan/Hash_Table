@@ -2,13 +2,13 @@
 #define HASH_TABLE_H
 
 #include <iostream>
-#include <fstream>
 
 #include <vector>
-#include <list>
+#include <forward_list>
 
 #include <utility>
 #include <initializer_list>
+#include <algorithm>
 
 template <typename Key, typename Value>
 class hash_table
@@ -16,17 +16,23 @@ class hash_table
 public: // THE C-TORS AND THE D-TOR
 
     // default c-tor
-    hash_table() = default;
+    hash_table();
 
-    // parametrized ctor
+    // parametrized c-tor
     // constructs a hash_table with a certain count
     // default initializes the member
     hash_table(size_t);
 
     // parametrized c-tor
     // constructs a hash_table with a certain count
-    // initializes the elements by the given vakue
+    // initializes the elements by the given value
     hash_table(size_t, std::pair<Key, Value>);
+
+    // parametrized c-tor
+    // constructs a hash_table with a certain count
+    // initializes the elements with the given key 
+    // and the given value
+    hash_table(size_t, Key key, Value value);
 
     // copy c-tor
     hash_table(const hash_table<Key, Value>&);
@@ -49,22 +55,18 @@ public: // OPERATORS
     hash_table& operator=(hash_table<Key, Value>&&);
 
     // global out-stream operator for std::ostream objects
-    friend std::ostream& operator<<(std::ostream&, hash_table<Key, Value>);
+    friend std::ostream& operator<<(std::ostream&, const hash_table<Key, Value>&);
 
-    // global out-stream operator for std::ofstream objects
-    friend std::ofstream& operator<<(std::ofstream&, hash_table<Key, Value>);
+    // operator[]
+    // returns a reference to the element stored in the hash_table
+    // with the given key
+    Value& operator[](const Key&);
 
-    // subscript operator 
-    // returns the bucket within a specific position
-    // the bucket can be change later
-    // in this hash_table a bucket is an std::list
-    std::list<std::pair<Key, Value>>& operator[](size_t);
-
-    // subscript operator (const)
-    // returns the bucket within a specific position
-    // the bucket cannot be changed later
-    // in this hash)table a buvket is an std::list
-    const std::list<std::pair<Key, Value>>& operator[](size_t) const;
+    // operator[] (const)
+    // returns a const reference to the element stored 
+    // in the hash_table with the given key
+    // (can't modify it)
+    const Value& operator[](const Key&) const;
 
     // operator is equal to
     bool operator==(const hash_table<Key, Value>&) const;
@@ -150,7 +152,7 @@ private:
     // underlying array is an std::vector
     // each bucket is an std::list
     // each list contains <Key, Value> pairs
-    std::vector<std::list<std::pair<Key, Val>>> _buffer;
+    std::vector<std::forward_list<std::pair<Key, Val>>> _buffer;
     size_t _size;
 };
 
@@ -228,3 +230,6 @@ public:
 };
 
 #endif // HASH_TABLE_H
+
+
+
