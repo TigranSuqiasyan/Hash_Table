@@ -75,29 +75,29 @@ public: // OPERATORS
     bool operator!=(const hash_table<Key, Value>&) const;
 
     // operator +
-    hash_table<Key, Value>& operator+(const hash_table<Key, Value>&);
+    friend hash_table<Key, Value> operator+(const hash_table<Key, Value>&, const hash_table<Key, Value>&);
 
     // operator +=
     const hash_table<Key, Value>& operator+=(const hash_table<key, Value>&) const;
 
     // operator is less than
-    bool operator<(const hash_table<Key, Value>&) const;
+    friend bool operator<(const hash_table<Key, Value>&, const hash_table<Key, Value>&);
 
     // operator is greather than
-    bool operator>(const hash_table<Key, Value>&) const;
+    friend bool operator>(const hash_table<Key, Value>&, const hash_table<Key, Value>&);
 
     // operator is less than or equal to
-    bool operator<=(const hash_table<Key, Value>&) const;
+    friend bool operator<=(const hash_table<Key, Value>&, const hash_table<Key, Value>&);
 
     // operator is greather than or equal to
-    bool operator>=(const hash_table<key, Value>&) const;
+    friend bool operator>=(const hash_table<key, Value>&, const hash_table<Key, Value>&);
 
 public: // MEMBER FUNCTIONS
 
     // checks whether the container is empty
     bool empty() const;
 
-    // returns the size of the underlying array
+    // returns the number of elements stored
     size_t size() const;
 
     // clears the contents of the container
@@ -107,8 +107,8 @@ public: // MEMBER FUNCTIONS
     void insert(const std::pair<Key, Value>&);
 
     // constructs an element in-place
-    template <typename Arg, typename... Args>
-    void emplace(Arg, Args...);
+    template <typename... Args>
+    void emplace(Args...);
 
     // erases the element with the given key
     // if there is not such element, does nothing
@@ -120,10 +120,10 @@ public: // MEMBER FUNCTIONS
 
     // extracts nodes from the container
     // and returns that element
-    // if ther is not such element, does nothing
+    // if there is not such element, does nothing
     std::pair<Key, Value>& extract(const Key&);
 
-    // splices nodes rfom the container given as a parameter
+    // splices nodes from the container given as a parameter
     void merge(hash_table<Key, Value>&);
 
     // returns the number of elements with the specific key
@@ -153,9 +153,9 @@ private:
     // each bucket is an std::list
     // each list contains <Key, Value> pairs
     std::vector<std::forward_list<std::pair<Key, Val>>> _buffer;
-    size_t _size;
+    size_t _array_size;
+    size_t _elements_count;
 };
-
 
 // spectialization for std::string as a key
 template <typename Value>
