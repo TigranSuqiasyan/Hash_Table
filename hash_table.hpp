@@ -23,17 +23,6 @@ public: // THE C-TORS AND THE D-TOR
     // default initializes the member
     hash_table(size_t);
 
-    // parametrized c-tor
-    // constructs a hash_table with a certain count
-    // initializes the elements by the given value
-    hash_table(size_t, std::pair<Key, Value>);
-
-    // parametrized c-tor
-    // constructs a hash_table with a certain count
-    // initializes the elements with the given key 
-    // and the given value
-    hash_table(size_t, Key key, Value value);
-
     // copy c-tor
     hash_table(const hash_table<Key, Value>&);
 
@@ -78,7 +67,7 @@ public: // OPERATORS
     friend hash_table<Key, Value> operator+(const hash_table<Key, Value>&, const hash_table<Key, Value>&);
 
     // operator +=
-    const hash_table<Key, Value>& operator+=(const hash_table<key, Value>&) const;
+    const hash_table<Key, Value>& operator+=(const hash_table<key, Value>&);
 
     // operator is less than
     friend bool operator<(const hash_table<Key, Value>&, const hash_table<Key, Value>&);
@@ -230,6 +219,3 @@ public:
 };
 
 #endif // HASH_TABLE_H
-
-
-
