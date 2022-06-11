@@ -123,9 +123,9 @@ public: // MEMBER FUNCTIONS
 
     // checks whether the container contains
     // an element with the given key
-    bool contains(const Key&);
+    bool contains(const Key&) const;
 
-    // return the average number of elements per bucket
+    // returns the average number of elements per bucket
     // in this hash_table a bucket is an std::list
     size_t load_factor() const;
 
@@ -141,7 +141,7 @@ private:
     // underlying array is an std::vector
     // each bucket is an std::list
     // each list contains <Key, Value> pairs
-    std::vector<std::forward_list<std::pair<Key, Val>>> _buffer;
+    std::vector<std::forward_list<std::pair<Key, Value>>> _buffer;
     size_t _array_size;
     size_t _elements_count;
 };

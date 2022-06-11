@@ -174,7 +174,7 @@ hash_table<Key, Value>& hash_table<Key, Value>::operator=
     _elements_count = rhs._elements_count;
 }
 
-// global operator<< for std::ostream objects
+/*// global operator<< for std::ostream objects
 template <typename Key, typename Value>
 std::ostream& operator<<
     (std::ostream& os, const hash_table<Key, Value>& obj)
@@ -188,7 +188,7 @@ std::ostream& operator<<
         }
     }
     return os;
-}
+}*/
 
 // operator[]
 // returns a reference to the element with the given key
@@ -300,7 +300,7 @@ hash_table<Key, Value> operator+
     return result;
 }
 
-/*// operator+=
+// operator+=
 // concatinates the hash_table given as a parameter
 // to the one on which that function is called
 // returns a const reference to that object
@@ -308,5 +308,115 @@ template <typename Key, typename Value>
 const hash_table<Key, Value>& hash_table<Key, Value>::operator+=
     (const hash_table<Key, Value>& rhs)
 {
+}
 
-}*/
+// this function checks whether our
+// data structure is empty
+template <typename Key, typename Value>
+bool hash_table<Key, Value>::empty() const
+{
+    if(_buffer.empty())
+        return true;
+    bool result = true;
+    for(size_t i{}; i < _array_size; ++i)
+    {
+        if(!_buffer[i].empty())
+            return false;
+    }
+    return result;
+}
+
+// this function returns the number of elements
+template <typename Key, typename Value>
+size_t hash_table<Key, Value>::size() const
+{
+    return _elements_count;
+}
+
+// this function clears the contents
+template <typename Key, typename Value>
+void hash_table<Key, Value>::clear()
+{
+    _buffer.clear();
+    _array_size = 0;
+    _elements_count = 0;
+}
+
+// this function inserts an element
+template <typename Key, typename Value>
+void hash_table<Key, Value>::insert
+    (const std::pair<Key, Value>& pair)
+{
+    if(_elements_count == _array_size)
+    {
+        this->rehash(_array_size * 2);
+    }
+    buffer[this->hash(pair.first)].push_front(pair);
+}
+
+// this function reserves at least the specified number
+// of buckets and regenerates the hash_table
+template <typename Key, typename Value>
+void hash_table<Key, Value>::rehash(size_t count)
+{
+    std::vector<std::forward_list<std::pair<Key, Value>>> new_buffer(count);
+    size_t hash_result{};
+    for(size_t i{}; i < _array_size; ++i)
+    {
+        auto begin = _buffer[i].begin();
+        auto end = _buffer[i].end();
+        for(; begin != end; ++begin)
+        {
+            hash_result = this->hash((*begin).first);
+            new_buffer[hash_result].push_front(*begin);
+        }
+    }
+    _buffer = new_buffer;
+    _array_size = count;
+}
+
+// constructs an element in-place
+template <typename Key, typename Value, typename... Args>
+void hash_table<Key, Value>::emplace
+{
+
+}
+
+// erases the element with the given key
+// if there is not such element, does nothing
+template <typename Key, typename Value>
+void hash_table<Key, Value>::erase(const Key& key)
+{
+
+}
+
+// checks wheteher the container contains
+// an element with the given key
+template <typename Key, typename Value>
+bool hash_table<Key, Value>::contains(const Key& key) const
+{
+    for(size_t i{}; i < _array_size; ++i)
+    {
+        auto begin = _buffer[i].begin();
+        auto end = _buffer[i].end();
+        for(; begin!= end; ++begin)
+        {
+            if((*begin).first == key)
+                return true;
+        }
+    }
+    return false;
+}
+
+// returns the average number of elements per bucket
+template <typename Key, typename Value>
+size_t hash_table<Key, Value>::load_factor() const
+{
+    return (static_cast<double>(_elements_count)) / _array_size;
+}
+
+
+
+
+
+
