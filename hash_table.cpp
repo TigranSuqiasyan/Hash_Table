@@ -9,95 +9,6 @@
 
 #include "hash_table.hpp"
 
-// implementation of the hash function
-// using modulo arithmetic
-// for type Key 'operator int' must be overloaded
-template <typename Key, typename Value>
-size_t hash_table<Key, Value>::hash(const Key& key)
-{
-    return int(key) % _array_size;
-}
-
-// implementation of the hash function
-// specialization for std::string as a key
-template <typename Value>
-size_t hash_table<std::string, Value>::hash(const std::string& key)
-{
-    size_t result{};
-    for(int i{}; i < key.size(); ++i) 
-    {
-        result += key[i];
-    }
-    return result % _array_size;
-}
-
-// implementation of the hash function
-// specialization for int as a key
-template <typename Value>
-size_t hash_table<int, Value>::hash(int key)
-{
-    return key % _array_size;
-}
-
-// implemantation of the hash function
-// specialization for long as a key
-template <typename Value>
-size_t hash_table<long, Value>::hash(long key)
-{
-    return key % _array_size;
-}
-
-// implementation of the hash fuction
-// specialization for short as a key
-template <typename Value>
-size_t hash_table<short, Value>::hash(short key)
-{
-    return key % _array_size;
-}
-
-// implementation of the hash function
-// specialization for char as a key
-template <typename Value>
-size_t hash_table<char, Value>::hash(char key)
-{
-    return key % _array_size;
-}
-
-// implementation of the hash function
-// specialization for wchar_t as a key
-template <typename Value>
-size_t hash_table<wchar_t, Value>::hash(wchar_t key)
-{
-    return key % _array_size;
-}
-
-// implementetion of the hash function
-// specialization for float as a key
-template <typename Value>
-size_t hash_table<float, Value>::hash(float key)
-{
-    size_t integral = static_cast<int>key;
-    return integral % _array_size;
-}
-
-// implementation of the hash function
-// specialization for double as a key
-template <typename Value>
-size_t hash_table<double, Value>::hash(double key)
-{
-    size_t integral = static_cast<int>key;
-    return integral % _array_size;
-}
-
-// implementation for the hash function
-// specialization for long double as a key
-template <typename Value>
-size_t hash_table<long double, Value>::hash(long double key)
-{
-    size_t integral = static_cast<int>key;
-    return integral % _array_size;
-}
-
 // default constructor
 template <typename Key, typename Value>
 hash_table<Key, Value>::hash_table() = default;
@@ -121,7 +32,7 @@ hash_table<Key, Value>::hash_table
         _elements_count{init.size()}
 {
     auto end = init.end();
-    for(auto it = init.begin(); it != end; ++i)
+    for(auto it = init.begin(); it != end; ++it)
     {
         _buffer[hash((*it).first)] = *it;
     }
@@ -162,6 +73,7 @@ hash_table<Key, Value>& hash_table<Key, Value>::operator=
     _buffer = rhs._buffer;
     _array_size = rhs._array_size;
     _elements_count = rhs._elements_count;
+    return *this;
 }
 
 // move assignment operator
@@ -174,21 +86,6 @@ hash_table<Key, Value>& hash_table<Key, Value>::operator=
     _elements_count = rhs._elements_count;
 }
 
-/*// global operator<< for std::ostream objects
-template <typename Key, typename Value>
-std::ostream& operator<<
-    (std::ostream& os, const hash_table<Key, Value>& obj)
-{
-    for(size_t i{}; i < obj._array_size; ++i)
-    {
-        auto end = obj._buffer[i].end();
-        for(auto it = obj._buffer[i].begin(); it != enf; ++i)
-        {
-            os << (*it).first << "   " << (*it).second << "\n";
-        }
-    }
-    return os;
-}*/
 
 // operator[]
 // returns a reference to the element with the given key
@@ -219,7 +116,18 @@ Value& hash_table<Key, Value>::operator[](const Key& key)
 template <typename Key, typename Value>
 const Value& hash_table<Key, Value>::operator[](const Key& key) const
 {
-    return const_cast<const Value&>(this->operator[key]);
+    int hash_result = hash(key);
+    auto begin = _buffer[hash_result].begin();
+    auto end = _buffer[hash_result].end();
+    for(; begin != end; ++begin)
+    {
+        if(*begin == key)
+            return (*begin).second;
+    }
+    std::pair<Key, Value> pair;
+    pair.first = key;
+    _buffer[hash_result].push_front(pair);
+    return _buffer[hash_result].front().second;
 }
 
 // operator==
@@ -230,7 +138,7 @@ template <typename Key, typename Value>
 bool hash_table<Key, Value>::operator==
     (const hash_table<Key, Value>& rhs) const
 {
-    std::vector<std::pair<Key, Value>> first_contaier;
+    std::vector<std::pair<Key, Value>> first_container;
     std::vector<std::pair<Key, Value>> second_container;
     for(size_t i{}; i < _array_size; ++i)
     {
@@ -238,7 +146,7 @@ bool hash_table<Key, Value>::operator==
         auto end = _buffer[i].end();
         for(; begin != end; ++begin)
         {
-            first_contaier.push_back(*begin);
+            first_container.push_back(*begin);
         }
     }
 
@@ -251,8 +159,8 @@ bool hash_table<Key, Value>::operator==
             second_container.push_back(*begin);
         }
     }
-    return std::is_permutation(first_contaier.begin(),
-        first_contaier.end(), second_container.begin());
+    return std::is_permutation(first_container.begin(),
+        first_container.end(), second_container.begin());
 }
 
 // operator!=
@@ -271,16 +179,15 @@ bool hash_table<Key, Value>::operator!=
 // from both left-hand-side and right-hand-side elements
 // returns the data structure by value
 template <typename Key, typename Value>
-hash_table<Key, Value> operator+
-    (const hash_table<Key, Value>& lhs, 
-    const hash_table<Key, Value>& rhs)
+hash_table<Key, Value> hash_table<Key, Value>::operator+
+    (const hash_table<Key, Value>& rhs) const
 {
     size_t hash_result{};
-    hash_table<key, Value> result{lhs._array_size + rhs._array_size};
-    for(size_t i{}; i < lhs._array_size; ++i)
+    hash_table<Key, Value> result{this->_array_size + rhs._array_size};
+    for(size_t i{}; i < this->_array_size; ++i)
     {
-        auto begin = lhs._buffer[i].begin();
-        auto end = lhs._buffer[i].end();
+        auto begin = this->_buffer[i].begin();
+        auto end = this->_buffer[i].end();
         for(; begin != end; ++begin)
         {
             hash_result = result.hash((*begin).first);
@@ -300,14 +207,53 @@ hash_table<Key, Value> operator+
     return result;
 }
 
-// operator+=
-// concatinates the hash_table given as a parameter
-// to the one on which that function is called
-// returns a const reference to that object
+// operator +=
 template <typename Key, typename Value>
 const hash_table<Key, Value>& hash_table<Key, Value>::operator+=
     (const hash_table<Key, Value>& rhs)
 {
+    size_t hash_result;
+    hash_table<Key, Value> temp(*this);
+    this->operator=(temp + rhs);
+    return *this;
+}
+
+// operator is  less than
+template <typename Key, typename Value>
+bool hash_table<Key, Value>::operator<
+    (const hash_table<Key, Value>& rhs) const
+{
+    return this->_elements_count < rhs._elements_count;
+}
+
+// operator is greathe than
+template <typename Key, typename Value>
+bool hash_table<Key, Value>::operator>
+    (const hash_table<Key, Value>& rhs) const
+{
+    return this->_elements_count > rhs._elements_count;
+}
+
+// operator is less or equal
+template <typename Key, typename Value>
+bool hash_table<Key, Value>::operator<=
+    (const hash_table<Key, Value>& rhs) const
+{
+    bool result{};
+    result |= this->operator==(rhs);
+    result |= this->operator<(rhs);
+    return result;
+}
+
+// operator is greater or equal
+template <typename Key, typename Value>
+bool hash_table<Key, Value>::operator>=
+    (const hash_table<Key, Value>& rhs) const
+{
+    bool result{};
+    result |= this->operator==(rhs);
+    result |= this->operator>(rhs);
+    return result;
 }
 
 // this function checks whether our
@@ -351,7 +297,7 @@ void hash_table<Key, Value>::insert
     {
         this->rehash(_array_size * 2);
     }
-    buffer[this->hash(pair.first)].push_front(pair);
+    _buffer[this->hash(pair.first)].push_front(pair);
 }
 
 // this function reserves at least the specified number
@@ -375,12 +321,12 @@ void hash_table<Key, Value>::rehash(size_t count)
     _array_size = count;
 }
 
-// constructs an element in-place
+/*// constructs an element in-place
 template <typename Key, typename Value, typename... Args>
 void hash_table<Key, Value>::emplace
 {
 
-}
+}*/
 
 // erases the element with the given key
 // if there is not such element, does nothing
@@ -408,15 +354,38 @@ bool hash_table<Key, Value>::contains(const Key& key) const
     return false;
 }
 
+/*
 // returns the average number of elements per bucket
 template <typename Key, typename Value>
 size_t hash_table<Key, Value>::load_factor() const
 {
     return (static_cast<double>(_elements_count)) / _array_size;
 }
+*/
 
+/*
+// global operator<< for std::ostream objects
+template <typename Key, typename Value>
+std::ostream& operator<<
+    (std::ostream& os, const hash_table<Key, Value>& obj)
+{
+    for(size_t i{}; i < obj._array_size; ++i)
+    {
+        auto end = obj._buffer[i].end();
+        for(auto it = obj._buffer[i].begin(); it != end; ++i)
+        {
+            os << (*it).first << "   " << (*it).second << "\n";
+        }
+    }
+    return os;
+}
+*/
 
-
+int main()
+{
+    hash_table<int, int> ht1;
+    hash_table<int, int> ht2 = ht1;
+}
 
 
 

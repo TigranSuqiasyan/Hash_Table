@@ -44,7 +44,7 @@ public: // OPERATORS
     hash_table& operator=(hash_table<Key, Value>&&);
 
     // global out-stream operator for std::ostream objects
-    friend std::ostream& operator<<(std::ostream&, const hash_table<Key, Value>&);
+    //friend std::ostream& operator<<(std::ostream&, const hash_table<Key, Value>&);
 
     // operator[]
     // returns a reference to the element stored in the hash_table
@@ -64,22 +64,22 @@ public: // OPERATORS
     bool operator!=(const hash_table<Key, Value>&) const;
 
     // operator +
-    friend hash_table<Key, Value> operator+(const hash_table<Key, Value>&, const hash_table<Key, Value>&);
+    hash_table<Key, Value> operator+(const hash_table<Key, Value>&) const;
 
     // operator +=
-    const hash_table<Key, Value>& operator+=(const hash_table<key, Value>&);
+    const hash_table<Key, Value>& operator+=(const hash_table<Key, Value>&);
 
     // operator is less than
-    friend bool operator<(const hash_table<Key, Value>&, const hash_table<Key, Value>&);
+    bool operator<(const hash_table<Key, Value>&) const;
 
     // operator is greather than
-    friend bool operator>(const hash_table<Key, Value>&, const hash_table<Key, Value>&);
+    bool operator>(const hash_table<Key, Value>&) const;
 
     // operator is less than or equal to
-    friend bool operator<=(const hash_table<Key, Value>&, const hash_table<Key, Value>&);
+    bool operator<=(const hash_table<Key, Value>&) const;
 
     // operator is greather than or equal to
-    friend bool operator>=(const hash_table<key, Value>&, const hash_table<Key, Value>&);
+    bool operator>=(const hash_table<Key, Value>&) const;
 
 public: // MEMBER FUNCTIONS
 
@@ -105,7 +105,7 @@ public: // MEMBER FUNCTIONS
 
     // swaps the contents of the container
     // with the hash_table container given as a parameter
-    void swap(hash_table<Key, pair>&);
+    void swap(hash_table<Key, Value>&);
 
     // extracts nodes from the container
     // and returns that element
@@ -136,7 +136,7 @@ public: // MEMBER FUNCTIONS
     // this function is used to hash the keys
     size_t hash(const Key&);
 
-private:
+protected:
 
     // underlying array is an std::vector
     // each bucket is an std::list
@@ -144,78 +144,6 @@ private:
     std::vector<std::forward_list<std::pair<Key, Value>>> _buffer;
     size_t _array_size;
     size_t _elements_count;
-};
-
-// spectialization for std::string as a key
-template <typename Value>
-class hash_table<std::string, Value>
-{
-public:
-    size_t hash(const std::string&);
-};
-
-// specialization for int as a key
-template <typename Value>
-class hash_table<int, Value>
-{
-public:
-    size_t hash(int);
-};
-
-// specialization for long as a key
-template <typename Value>
-class hash_table<long, Value>
-{
-public:
-    size_t hash(long);
-};
-
-// specialization for short as a key
-template <typename Value>
-class hash_table<short, Value>
-{
-public:
-    size_t hash(short);
-};
-
-// specialization for char as a key
-template <typename Value>
-class hash_table<char, Value>
-{
-public:
-    size_t hash(char);
-};
-
-// specialization for wchar_t as a key
-template <typename Value>
-class hash_table<wchar_t, Value>
-{
-public:
-    size_t hash(wchar_t);
-};
-
-// specialization for float as a key
-template <typename Value>
-class hash_table<float, Value>
-{
-public:
-    size_t hash(float);
-};
-
-// specialization for double as a key
-template <typename Value>
-class hash_table<double, Value>
-{
-public:
-    size_t hash(double);
-};
-
-// specialization for long double as a key
-template <typename Value>
-class hash_table<long double, Value>
-{
-public:
-    size_t hash(long double);
 };
 
 #endif // HASH_TABLE_H
